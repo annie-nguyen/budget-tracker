@@ -1,0 +1,11 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@200;400;500;600;700;800;900&display=swap');
+@import 'tailwindcss';
+
+@import './global/_global.scss';
+@import './ui/_titles.scss';
+@import './ui/_buttons.scss';
+@import './ui/_modal.scss';
+@import './ui/_form.scss';
+@import './ui/_box.scss';
+@import './ui/_dropdown.scss';
+@import './ui/_progress-bar.scss';

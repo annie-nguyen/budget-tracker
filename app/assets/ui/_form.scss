@@ -1,0 +1,54 @@
+label,
+input[type='checkbox'],
+input[type='radio'] {
+  @apply cursor-pointer;
+}
+
+.label {
+  @apply block text-sm/6 font-medium dark:text-white;
+}
+
+.input {
+  @apply mt-2 block w-full grow bg-gray-800 py-1.5 pr-3 pl-1 text-base text-white placeholder:text-gray-500 sm:text-sm/6 rounded-md bg-white/5 pl-3 outline-1 -outline-offset-1 outline-white/10 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-indigo-500;
+}
+
+input[type='checkbox'] {
+  @apply w-4 h-4 rounded-sm bg-white/5 appearance-none outline-1 -outline-offset-1 outline-white/10 focus-visible:outline-2 focus-visible:-outline-offset-2;
+}
+
+.checkbox {
+  @apply relative flex items-center gap-2;
+
+  .check {
+    content: '';
+    width: calc(var(--spacing) * 2.5);
+    height: calc(var(--spacing) * 1.5);
+    border-left: 2px solid white;
+    border-bottom: 2px solid white;
+    position: absolute;
+    top: calc(var(--spacing) * 2);
+    left: calc(var(--spacing) * 0.8);
+    transform: rotate(-45deg);
+    opacity: 0;
+  }
+}
+
+input[type='checkbox']:checked {
+  @apply bg-indigo-500;
+
+  &:checked + .check {
+    opacity: 1;
+  }
+}
+
+.select {
+  @apply mt-2 block w-full cursor-default rounded-md bg-white/5 p-2 text-left dark:text-white outline-1 -outline-offset-1 outline-white/10 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-indigo-500 sm:text-sm/6;
+}
+
+.error {
+  @apply mt-2 text-rose-500 text-sm;
+}
+
+.field-error {
+  @apply outline-rose-500;
+}

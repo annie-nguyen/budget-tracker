@@ -1,0 +1,7 @@
+.progress-bar {
+  @apply relative overflow-hidden h-[5px] w-full my-1 rounded-full bg-slate-700;
+}
+
+.progress-bar__fill {
+  @apply absolute top-0 left-0 bottom-0 w-full;
+}

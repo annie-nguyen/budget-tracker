@@ -1,0 +1,19 @@
+button {
+  cursor: pointer;
+}
+
+.button {
+  @apply bg-indigo-500 hover:bg-indigo-400 text-white text-sm font-semibold py-2 px-4 rounded-lg cursor-pointer;
+}
+
+.button-border {
+  @apply border-1 border-white hover:bg-indigo-400 hover:border-indigo-400 text-white text-sm font-semibold py-2 px-4 rounded-lg cursor-pointer;
+}
+
+.button-xs {
+  @apply hover:bg-indigo-400 border-1 border-white hover:border-indigo-400 text-white text-xs font-semibold py-1 px-2 rounded-full cursor-pointer;
+}
+
+.btn-delete {
+  @apply bg-rose-500 hover:bg-rose-400;
+}

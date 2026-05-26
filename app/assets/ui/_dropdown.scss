@@ -1,0 +1,11 @@
+.dropdown {
+  @apply relative cursor-pointer;
+}
+
+.dropdown-content {
+  @apply py-5;
+}
+
+.dropdown-button {
+  @apply text-left cursor-pointer;
+}
