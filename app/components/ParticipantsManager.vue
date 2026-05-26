@@ -23,7 +23,7 @@ function handleAdd(): void {
     <div
       v-for="participant in store.participants"
       :key="participant"
-      class="py-2 flex justify-between items-center gap-3 border-t-1 border-slate-700"
+      class="py-2 flex justify-between items-center gap-3 border-t-1 dark:border-slate-700 border-slate-200"
     >
       <p>{{ participant }}</p>
       <button @click="store.removeParticipant(participant)" class="button-xs">Supprimer</button>

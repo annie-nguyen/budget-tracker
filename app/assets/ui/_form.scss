@@ -5,15 +5,15 @@ input[type='radio'] {
 }
 
 .label {
-  @apply block text-sm/6 font-medium dark:text-white;
+  @apply block text-sm/6 font-medium dark:text-white text-slate-800;
 }
 
 .input {
-  @apply mt-2 block w-full grow bg-gray-800 py-1.5 pr-3 pl-1 text-base text-white placeholder:text-gray-500 sm:text-sm/6 rounded-md bg-white/5 pl-3 outline-1 -outline-offset-1 outline-white/10 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-indigo-500;
+  @apply mt-2 block w-full grow dark:bg-gray-800 py-1.5 pr-3 pl-1 text-base dark:text-white text-slate-800 placeholder:text-gray-500 sm:text-sm/6 rounded-md dark:bg-white/5 bg-slate-100 pl-3 outline-1 -outline-offset-1 dark:outline-white/10 outline-slate-200 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-indigo-500;
 }
 
 input[type='checkbox'] {
-  @apply w-4 h-4 rounded-sm bg-white/5 appearance-none outline-1 -outline-offset-1 outline-white/10 focus-visible:outline-2 focus-visible:-outline-offset-2;
+  @apply w-4 h-4 rounded-sm dark:bg-white/5 bg-slate-200 appearance-none outline-1 -outline-offset-1 dark:outline-white/10 outline-slate-300 focus-visible:outline-2 focus-visible:-outline-offset-2;
 }
 
 .checkbox {
@@ -34,7 +34,7 @@ input[type='checkbox'] {
 }
 
 input[type='checkbox']:checked {
-  @apply bg-indigo-500;
+  @apply bg-indigo-500 outline-indigo-500;
 
   &:checked + .check {
     opacity: 1;
@@ -42,7 +42,7 @@ input[type='checkbox']:checked {
 }
 
 .select {
-  @apply mt-2 block w-full cursor-default rounded-md bg-white/5 p-2 text-left dark:text-white outline-1 -outline-offset-1 outline-white/10 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-indigo-500 sm:text-sm/6;
+  @apply mt-2 block w-full cursor-default rounded-md dark:bg-white/5 bg-slate-100 p-2 text-left dark:text-white outline-1 -outline-offset-1 dark:outline-white/10 outline-slate-200 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-indigo-500 sm:text-sm/6;
 }
 
 .error {
