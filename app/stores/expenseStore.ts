@@ -1,55 +1,79 @@
 import type { Expense, Filters, ExpenseFormData, Category, Currency } from '~/types'
 
 export const useExpenseStore = defineStore('expenses', () => {
-  // Participants Modal
-  const isParticipantsOpen = ref<boolean>(false)
+  // Supabase
+  const supabase = useSupabaseClient()
 
-  // Load expense from local storage
-  function loadFromStorage(): Expense[] {
-    if (!import.meta.client) return []
-    const raw = localStorage.getItem('budget-expenses')
-    return raw ? (JSON.parse(raw) as Expense[]) : []
-  }
-
-  function loadParticipantsFromStorage(): string[] {
-    if (!import.meta.client) return []
-    const participant = localStorage.getItem('budget-participants')
-    return participant ? JSON.parse(participant) : []
-  }
-
-  // States
+  //--- States
   const expenses = ref<Expense[]>([])
+  const participants = ref<string[]>([])
   const filters = ref<Filters>({
     month: '',
     category: [],
     persons: [],
     currency: '',
   })
-  const participants = ref<string[]>([])
   const exchangeRate = ref<number>(1.09)
 
-  onMounted(() => {
-    expenses.value = loadFromStorage()
-    participants.value = loadParticipantsFromStorage()
+  // Participants Modal
+  const isParticipantsOpen = ref<boolean>(false)
 
-    // Watch expenses changes and update budget-expenses in local storage
-    watch(
-      expenses,
-      (newValue) => {
-        localStorage.setItem('budget-expenses', JSON.stringify(newValue))
-      },
-      { deep: true },
-    )
+  // Load expenses from database
+  async function loadExpenses(): Promise<void> {
+    const { data, error } = await supabase.from('expenses').select('*')
+    if (error) console.error('Erreur de chargement des dépenses', error)
+    else expenses.value = data as Expense[]
+  }
 
-    // Watch participants changes and update budget-participants in local storage
-    watch(
-      participants,
-      (newValue) => {
-        localStorage.setItem('budget-participants', JSON.stringify(newValue))
-      },
-      { deep: true },
-    )
+  // Load participants from database
+  async function loadParticipants(): Promise<void> {
+    const { data, error } = await supabase.from('participants').select('*')
+    if (error) console.error('Erreur de chargement des participants', error)
+    else participants.value = data.map((p) => p.name)
+  }
+
+  onMounted(async () => {
+    await loadExpenses()
+    await loadParticipants()
   })
+
+  // Add Participants (action)
+  async function addParticipant(name: string): Promise<void> {
+    const { error } = await supabase.from('participants').insert({ name })
+    if (error) console.error('Erreur d\'ajout de participant', error)
+    else participants.value.push(name)
+  }
+
+  // Remove Participants (action)
+  async function removeParticipant(name: string): Promise<void> {
+    const { error } = await supabase.from('participants').delete().eq('name', name)
+    if (error) console.error('Erreur de suppression du participant', error)
+    else participants.value = participants.value.filter((p) => p !== name)
+  }
+
+  // Add Expense (action)
+  async function addExpense(data: ExpenseFormData): Promise<void> {
+    const { data: newExpense, error } = await supabase.from('expenses').insert({ ...data }).select().single()
+    if (error) console.error('Erreur d\'ajout de dépense', error)
+    else expenses.value.push(newExpense as Expense)
+  }
+
+  // Delete Expense (action)
+  async function deleteExpense(id: string): Promise<void> {
+    const { error } = await supabase.from('expenses').delete().eq('id', id)
+    if (error) console.error('Erreur de suppression de la dépense', error)
+    else expenses.value = expenses.value.filter((e) => e.id !== id)
+  }
+
+  // Update Expense (action)
+  async function updateExpense(id: string, data: ExpenseFormData): Promise<void> {
+    const { error } = await supabase.from('expenses').update({ ...data }).eq('id', id)
+    if (error) console.error('Erreur de mise à jour de la dépense', error)
+    else {
+      const index = expenses.value.findIndex((e) => e.id === id)
+      if (index !== -1) expenses.value[index] = { ...data, id }
+    }
+  }
 
   // Taux
   interface ExchangeRateResponse {
@@ -67,38 +91,6 @@ export const useExpenseStore = defineStore('expenses', () => {
       exchangeRate.value = data.rates.EUR
     } catch (error) {
       console.error('Impossible de récupérer le taux de change', error)
-    }
-  }
-
-  // Add Participants (action)
-  function addParticipant(name: string): void {
-    participants.value.push(name)
-  }
-
-  // Remove Participants (action)
-  function removeParticipant(name: string): void {
-    participants.value = participants.value.filter((e) => e != name)
-  }
-
-  // Add Expense (action)
-  function addExpense(data: ExpenseFormData): void {
-    const newExpense: Expense = {
-      ...data,
-      id: crypto.randomUUID(),
-    }
-    expenses.value.push(newExpense)
-  }
-
-  // Delete Expense (action)
-  function deleteExpense(id: string): void {
-    expenses.value = expenses.value.filter((e) => e.id !== id)
-  }
-
-  // Update Expense (action)
-  function updateExpense(id: string, data: ExpenseFormData): void {
-    const index = expenses.value.findIndex((e) => e.id === id)
-    if (index !== -1) {
-      expenses.value[index] = { ...data, id }
     }
   }
 
