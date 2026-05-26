@@ -78,13 +78,14 @@ defineExpose({ openForEdit })
         <label class="label">Participants</label>
         <div class="flex gap-5">
           <div v-for="participant in store.participants" :key="participant">
-            <label :for="`expense-persons-${participant.toLowerCase()}`">
+            <label :for="`expense-persons-${participant.toLowerCase()}`" class="checkbox">
               <input
                 type="checkbox"
                 :id="`expense-persons-${participant.toLowerCase()}`"
                 :value="participant"
                 v-model="form.persons"
               />
+              <span class="check"></span>
               {{ participant }}
             </label>
           </div>
