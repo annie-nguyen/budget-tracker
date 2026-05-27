@@ -6,9 +6,6 @@ const expenseFormRef = ref<InstanceType<typeof ExpenseForm> | null>(null)
 
 onMounted(() => {
   store.fetchExchangeRate()
-
-  // Dark mode by default
-  document.documentElement.classList.add('dark')
 })
 
 // Form

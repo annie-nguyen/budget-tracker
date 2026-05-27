@@ -1,11 +1,21 @@
 <script setup lang="ts">
 const store = useExpenseStore()
 const isDark = ref(true)
+const isMounted = ref(false)
+
+// App Theme apperance
+onMounted(() => {
+  const saved = localStorage.getItem('color-mode')
+  isDark.value = saved ? saved === 'dark' : true
+  document.documentElement.classList.toggle('dark', isDark.value)
+  isMounted.value = true
+})
 
 // App Theme apperance
 function toggleTheme(): void {
   isDark.value = !isDark.value
   document.documentElement.classList.toggle('dark', isDark.value)
+  localStorage.setItem('color-mode', isDark.value ? 'dark' : 'light')
 }
 </script>
 
@@ -22,7 +32,7 @@ function toggleTheme(): void {
       <button type="button" class="button" @click="store.isParticipantsOpen = true">
         👤 Participants
       </button>
-      <button type="button" @click="toggleTheme()">
+      <button v-if="isMounted" type="button" @click="toggleTheme()">
         <span v-if="isDark">🌖</span>
         <span v-else>🌒</span>
       </button>
