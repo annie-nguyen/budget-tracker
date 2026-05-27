@@ -10,6 +10,7 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "@hcaptcha/vue3-hcaptcha": "^1.3.0",
     "@nuxtjs/supabase": "^2.0.9",
     "@pinia/nuxt": "^0.11.3",
     "nuxt": "^4.4.6",

@@ -2,6 +2,8 @@
 const store = useExpenseStore()
 const isDark = ref(true)
 const isMounted = ref(false)
+const supabase = useSupabaseClient()
+const router = useRouter()
 
 // App Theme apperance
 onMounted(() => {
@@ -16,6 +18,13 @@ function toggleTheme(): void {
   isDark.value = !isDark.value
   document.documentElement.classList.toggle('dark', isDark.value)
   localStorage.setItem('color-mode', isDark.value ? 'dark' : 'light')
+}
+
+// Log out
+async function handleLogout(): Promise<void> {
+  const { error } = await supabase.auth.signOut()
+  if (error) console.error('Erreur de déconnexion', error)
+  else router.push('/login')
 }
 </script>
 
@@ -35,6 +44,9 @@ function toggleTheme(): void {
       <button v-if="isMounted" type="button" @click="toggleTheme()">
         <span v-if="isDark">🌖</span>
         <span v-else>🌒</span>
+      </button>
+      <button type="button" @click="handleLogout">
+        🚪
       </button>
     </div>
   </header>

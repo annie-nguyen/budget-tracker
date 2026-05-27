@@ -8,5 +8,11 @@ export default defineNuxtConfig({
   },
   supabase: {
     redirect: false
+  },
+  runtimeConfig: {
+    public: {
+      hcaptchaSitekey: '',
+      captchaEnabled: 'false'
+    }
   }
 })

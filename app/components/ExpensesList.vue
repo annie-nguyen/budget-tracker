@@ -58,9 +58,6 @@ watch(
   },
   { deep: true },
 )
-
-console.log('paginatedByMonth', paginatedByMonth.value)
-console.log('total pages', totalPages.value)
 </script>
 
 <template>

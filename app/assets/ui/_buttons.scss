@@ -17,3 +17,7 @@ button {
 .btn-delete {
   @apply bg-rose-500 hover:bg-rose-400;
 }
+
+.link {
+  @apply text-sm underline hover:no-underline
+}
