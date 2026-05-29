@@ -14,6 +14,7 @@ function handleSubmit(): void {
 }
 
 function handleDelete(): void {
+  if (!editingId.value) return
   store.deleteExpense(editingId.value)
   emit('close')
 }
@@ -77,16 +78,16 @@ defineExpose({ openForEdit })
       <div class="mt-5">
         <label class="label">Participants</label>
         <div class="flex gap-5">
-          <div v-for="participant in store.participants" :key="participant">
-            <label :for="`expense-persons-${participant.toLowerCase()}`" class="checkbox">
+          <div v-for="participant in store.participants" :key="participant.id">
+            <label :for="`expense-persons-${participant.name.toLowerCase()}`" class="checkbox">
               <input
                 type="checkbox"
-                :id="`expense-persons-${participant.toLowerCase()}`"
-                :value="participant"
+                :id="`expense-persons-${participant.name.toLowerCase()}`"
+                :value="participant.id"
                 v-model="form.persons"
               />
               <span class="check"></span>
-              {{ participant }}
+              {{ participant.name }}
             </label>
           </div>
         </div>

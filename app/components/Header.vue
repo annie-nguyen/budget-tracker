@@ -40,7 +40,7 @@ async function handleLogout(): Promise<void> {
       Budget Tracker
     </h1>
 
-    <p>Hello {{ userName }} ☀️</p>
+    <p class="dark:text-slate-500 text-slate-800">Hello {{ userName }} ☀️</p>
 
     <div class="flex gap-5">
       <button type="button" class="button" @click="store.isParticipantsOpen = true">
