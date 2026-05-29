@@ -91,17 +91,17 @@ const hasActiveFilters = computed(() => {
             <label
               :for="`persons-${participant}`"
               v-for="participant in store.participants"
-              :key="participant"
+              :key="participant.id"
               class="checkbox"
             >
               <input
                 type="checkbox"
                 :id="`persons-${participant}`"
-                :value="participant"
+                :value="participant.id"
                 v-model="store.filters.persons"
               />
               <span class="check"></span>
-              {{ participant }}
+              {{ participant.name }}
             </label>
           </div>
           <button v-if="store.filters.persons.length > 0" type="button" class="mt-5 button-xs" @click="store.filters.persons = []">

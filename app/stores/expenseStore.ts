@@ -1,4 +1,4 @@
-import type { Expense, Filters, ExpenseFormData, Category, Currency } from '~/types'
+import type { Expense, Filters, ExpenseFormData, Category, Currency, Participant } from '~/types'
 
 export const useExpenseStore = defineStore('expenses', () => {
   // Supabase
@@ -19,7 +19,7 @@ export const useExpenseStore = defineStore('expenses', () => {
 
   //--- States
   const expenses = ref<Expense[]>([])
-  const participants = ref<string[]>([])
+  const participants = ref<Participant[]>([])
   const filters = ref<Filters>({
     month: '',
     category: [],
@@ -34,10 +34,7 @@ export const useExpenseStore = defineStore('expenses', () => {
   // Load expenses from database
   async function loadExpenses(): Promise<void> {
     const { data: { session } } = await supabase.auth.getSession()
-    console.log('session au chargement:', session?.user?.id)
-
     const { data, error } = await supabase.from('expenses').select('*')
-    console.log('expenses chargées:', data)
 
     if (error) console.error('Erreur de chargement des dépenses', error)
     else expenses.value = data as Expense[]
@@ -47,7 +44,7 @@ export const useExpenseStore = defineStore('expenses', () => {
   async function loadParticipants(): Promise<void> {
     const { data, error } = await supabase.from('participants').select('*')
     if (error) console.error('Erreur de chargement des participants', error)
-    else participants.value = data.map((p) => p.name)
+    else participants.value = data as Participant[]
   }
 
   onMounted(async () => {
@@ -60,16 +57,26 @@ export const useExpenseStore = defineStore('expenses', () => {
     const { data: { session } } = await supabase.auth.getSession()
     const userId = session?.user?.id
 
-    const { error } = await supabase.from('participants').insert({ name, user_id: userId })
+    const { data: newParticipant, error } = await supabase.from('participants').insert({ name, user_id: userId }).select().single()
     if (error) console.error('Erreur d\'ajout de participant', error)
-    else participants.value.push(name)
+    else participants.value.push(newParticipant as Participant)
   }
 
   // Remove Participants (action)
-  async function removeParticipant(name: string): Promise<void> {
-    const { error } = await supabase.from('participants').delete().eq('name', name)
+  async function removeParticipant(id: string): Promise<void> {
+    const { error } = await supabase.from('participants').delete().eq('id', id)
     if (error) console.error('Erreur de suppression du participant', error)
-    else participants.value = participants.value.filter((p) => p !== name)
+    else participants.value = participants.value.filter((p) => p.id !== id)
+  }
+
+  // Update Participants (action)
+  async function updateParticipant(id: string, newName: string): Promise<void> {
+    const { error } = await supabase.from('participants').update({ name: newName }).eq('id', id)
+    if (error) console.error('Erreur de modification du participant', error)
+    else {
+      const index = participants.value.findIndex((e) => e.id === id)
+      if (index !== -1) participants.value[index] = { id, name: newName }
+    }
   }
 
   // Add Expense (action)
@@ -254,6 +261,7 @@ export const useExpenseStore = defineStore('expenses', () => {
     getFilteredAmount,
     addParticipant,
     removeParticipant,
+    updateParticipant,
     resetFilters,
     formatDate,
     // Computed

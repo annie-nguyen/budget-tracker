@@ -4,6 +4,9 @@ const isDark = ref(true)
 const isMounted = ref(false)
 const supabase = useSupabaseClient()
 const router = useRouter()
+const user = useSupabaseUser()
+
+const userName = user.value?.user_metadata?.display_name
 
 // App Theme apperance
 onMounted(() => {
@@ -36,6 +39,8 @@ async function handleLogout(): Promise<void> {
       >
       Budget Tracker
     </h1>
+
+    <p>Hello {{ userName }} ☀️</p>
 
     <div class="flex gap-5">
       <button type="button" class="button" @click="store.isParticipantsOpen = true">

@@ -37,3 +37,10 @@ export interface Filters {
   persons: string[]
   currency: Currency | ''
 }
+
+export interface Participant {
+  id: string
+  name: string
+}
+
+
