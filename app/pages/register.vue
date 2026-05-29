@@ -26,7 +26,7 @@ async function handleRegister(): Promise<void> {
     registerError.value = 'Les mots de passe ne correspondent pas'
     return
   }
-  const { error } = await supabase.auth.signUp({
+  const { data, error } = await supabase.auth.signUp({
     email: form.email,
     password: form.password,
     options: {
@@ -34,8 +34,16 @@ async function handleRegister(): Promise<void> {
       captchaToken: config.public.captchaEnabled === 'true' ? captchaToken.value : undefined
     }
   })
-  if (error) registerError.value = error.message
-  else router.push('/login?registered=true')
+  if (error) {
+    registerError.value = error.message
+  } else {
+    const { error: participantError} = await supabase.from('participants').insert({
+      name: form.name,
+      user_id: data.user?.id
+    })
+    if (participantError) console.error('Erreur de création de participant', participantError)
+    router.push('/login?registered=true')
+  }
 }
 </script>
 

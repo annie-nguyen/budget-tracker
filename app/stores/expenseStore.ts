@@ -3,6 +3,19 @@ import type { Expense, Filters, ExpenseFormData, Category, Currency } from '~/ty
 export const useExpenseStore = defineStore('expenses', () => {
   // Supabase
   const supabase = useSupabaseClient()
+  const user = useSupabaseUser()
+
+  // On sign in an sign out
+  supabase.auth.onAuthStateChange((event, session) => {
+    if (event === 'SIGNED_IN') {
+      loadExpenses()
+      loadParticipants()
+    }
+    if (event === 'SIGNED_OUT') {
+      expenses.value = []
+      participants.value = []
+    }
+  })
 
   //--- States
   const expenses = ref<Expense[]>([])
@@ -20,7 +33,12 @@ export const useExpenseStore = defineStore('expenses', () => {
 
   // Load expenses from database
   async function loadExpenses(): Promise<void> {
+    const { data: { session } } = await supabase.auth.getSession()
+    console.log('session au chargement:', session?.user?.id)
+
     const { data, error } = await supabase.from('expenses').select('*')
+    console.log('expenses chargées:', data)
+
     if (error) console.error('Erreur de chargement des dépenses', error)
     else expenses.value = data as Expense[]
   }
@@ -39,7 +57,10 @@ export const useExpenseStore = defineStore('expenses', () => {
 
   // Add Participants (action)
   async function addParticipant(name: string): Promise<void> {
-    const { error } = await supabase.from('participants').insert({ name })
+    const { data: { session } } = await supabase.auth.getSession()
+    const userId = session?.user?.id
+
+    const { error } = await supabase.from('participants').insert({ name, user_id: userId })
     if (error) console.error('Erreur d\'ajout de participant', error)
     else participants.value.push(name)
   }
@@ -53,8 +74,11 @@ export const useExpenseStore = defineStore('expenses', () => {
 
   // Add Expense (action)
   async function addExpense(data: ExpenseFormData): Promise<void> {
-    const { data: newExpense, error } = await supabase.from('expenses').insert({ ...data }).select().single()
-    if (error) console.error('Erreur d\'ajout de dépense', error)
+    const { data: { session } } = await supabase.auth.getSession()
+    const userId = session?.user?.id
+
+    const { data: newExpense, error } = await supabase.from('expenses').insert({ ...data, user_id: userId }).select().single()
+    if (error) console.error('Erreur d\'ajout de dépense', JSON.stringify(error))
     else expenses.value.push(newExpense as Expense)
   }
 
