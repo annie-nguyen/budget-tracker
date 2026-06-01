@@ -89,14 +89,14 @@ const hasActiveFilters = computed(() => {
         <div v-if="activePersonsDropdown" class="dropdown-content">
           <div class="flex flex-wrap gap-x-3 gap-y-1">
             <label
-              :for="`persons-${participant}`"
+              :for="`persons-${participant.id}`"
               v-for="participant in store.participants"
               :key="participant.id"
               class="checkbox"
             >
               <input
                 type="checkbox"
-                :id="`persons-${participant}`"
+                :id="`persons-${participant.id}`"
                 :value="participant.id"
                 v-model="store.filters.persons"
               />

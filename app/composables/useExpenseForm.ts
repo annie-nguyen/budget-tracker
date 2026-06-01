@@ -11,7 +11,7 @@ export function useExpenseForm() {
     currency: 'CHF',
     category: CATEGORIES[0],
     date: '',
-    persons: [...store.participants],
+    persons: store.participants.map(p => p.id),
     note: '',
   })
   const errors = reactive<Partial<Record<keyof ExpenseFormData, string>>>({})

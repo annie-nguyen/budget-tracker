@@ -23,6 +23,9 @@ const expenseAmount = computed<number>(() => {
     return displayAmount / store.exchangeRate
   }
 })
+
+  console.log('persons', props.expense.persons)
+  console.log('participants', store.participants)
 </script>
 
 <template>
@@ -42,7 +45,7 @@ const expenseAmount = computed<number>(() => {
           <div class="flex gap-2">
             <p class="text-sm text-slate-500">{{ expense.category }}</p>
             ·
-            <p class="text-sm text-slate-500">👥 {{ expense.persons.join(', ') }}</p>
+            <p class="text-sm text-slate-500">👥 {{ expense.persons.map(id => store.participants.find(p => p.id === id)?.name).join(', ') }}</p>
           </div>
         </div>
       </div>
