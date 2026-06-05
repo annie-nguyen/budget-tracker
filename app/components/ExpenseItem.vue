@@ -24,8 +24,6 @@ const expenseAmount = computed<number>(() => {
   }
 })
 
-  console.log('persons', props.expense.persons)
-  console.log('participants', store.participants)
 </script>
 
 <template>

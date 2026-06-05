@@ -13,6 +13,7 @@ export const CATEGORIES = [
   'voyages',
   'abonnements',
   'appart',
+  'beauté',
   'divers',
 ] as const
 
@@ -42,3 +43,15 @@ export interface Participant {
   id: string
   name: string
 }
+
+export interface Budget {
+  id: string
+  user_id: string
+  participant_id: string
+  month: string
+  amount: number
+  currency: Currency,
+  created_at: string
+}
+
+export type BudgetFormData = Omit<Budget, 'id' | 'user_id' | 'created_at'>

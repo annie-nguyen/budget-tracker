@@ -16,6 +16,8 @@ async function handleEdit(expense: Expense): Promise<void> {
   expenseFormRef.value?.openForEdit(expense)
 }
 
+// Budget form
+const isBugetFormOpen = ref<boolean>(false)
 </script>
 
 <template>
@@ -46,7 +48,13 @@ async function handleEdit(expense: Expense): Promise<void> {
 
       <div class="w-2/6">
         <ExpenseSummary />
+
+        <BudgetSummary />
+        <div class="mt-3 flex justify-end">
+          <button @click="isBugetFormOpen = true" class="button">💰 Ajouter un budget</button>
+        </div>
       </div>
+
     </main>
   </div>
 
@@ -58,6 +66,11 @@ async function handleEdit(expense: Expense): Promise<void> {
   <Modal v-if="isFormOpen" @close="isFormOpen = false">
     <template #header>Dépense</template>
     <ExpenseForm ref="expenseFormRef" @close="isFormOpen = false" />
+  </Modal>
+
+  <Modal v-if="isBugetFormOpen" @close="isBugetFormOpen = false">
+    <template #header>Budget initial</template>
+    <BudgetsManager />
   </Modal>
 </template>
 

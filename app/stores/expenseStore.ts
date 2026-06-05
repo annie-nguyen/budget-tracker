@@ -1,4 +1,4 @@
-import type { Expense, Filters, ExpenseFormData, Category, Currency, Participant } from '~/types'
+import type { Expense, Filters, ExpenseFormData, Category, Currency, Participant, Budget, BudgetFormData } from '~/types'
 
 export const useExpenseStore = defineStore('expenses', () => {
   // Supabase
@@ -10,10 +10,12 @@ export const useExpenseStore = defineStore('expenses', () => {
     if (event === 'SIGNED_IN') {
       loadExpenses()
       loadParticipants()
+      loadBudgets()
     }
     if (event === 'SIGNED_OUT') {
       expenses.value = []
       participants.value = []
+      budgets.value = []
     }
   })
 
@@ -27,6 +29,8 @@ export const useExpenseStore = defineStore('expenses', () => {
     currency: '',
   })
   const exchangeRate = ref<number>(1.09)
+  const budgets = ref<Budget[]>([])
+  // const selectedBudgetMonth = ref<string>('')
 
   // Participants Modal
   const isParticipantsOpen = ref<boolean>(false)
@@ -47,9 +51,19 @@ export const useExpenseStore = defineStore('expenses', () => {
     else participants.value = data as Participant[]
   }
 
+  // Load budgets from database
+  async function loadBudgets(): Promise<void> {
+    const { data, error } = await supabase.from('budgets').select('*')
+    if (error) console.error('Erreur de chargement de budgets', error)
+    else budgets.value = data as Budget[]
+
+    filters.value.month = monthsWithBudget.value[0] ?? ''
+  }
+
   onMounted(async () => {
     await loadExpenses()
     await loadParticipants()
+    await loadBudgets()
   })
 
   // Add Participants (action)
@@ -103,6 +117,33 @@ export const useExpenseStore = defineStore('expenses', () => {
     else {
       const index = expenses.value.findIndex((e) => e.id === id)
       if (index !== -1) expenses.value[index] = { ...data, id }
+    }
+  }
+
+  // Add Budget (action)
+  async function addBudget(data: BudgetFormData): Promise<void> {
+    const { data: { session } } = await supabase.auth.getSession()
+    const userId = session?.user?.id
+
+    const { data: newBudget, error } = await supabase.from('budgets').insert({ ...data, user_id: userId }).select().single()
+    if (error) console.error('Erreur d\'ajout de budget', error)
+    else budgets.value.push(newBudget as Budget)
+  }
+
+  // Delete Budget (action)
+  async function deleteBudget(id: string): Promise<void> {
+    const { error } = await supabase.from('budgets').delete().eq('id', id)
+    if (error) console.error('Erreur de suppression du budget', error)
+    else budgets.value = budgets.value.filter((e) => e.id !== id)
+  }
+
+  // Update Budget (action)
+  async function updateBudget(id: string, data: BudgetFormData): Promise<void> {
+    const { error } = await supabase.from('budgets').update({ ...data }).eq('id', id)
+    if (error) console.error('Erreur de mise à jour de budget', error)
+    else {
+      const index = budgets.value.findIndex((e) => e.id === id)
+      if (index !== -1) budgets.value[index] = { ...data, id }
     }
   }
 
@@ -246,11 +287,51 @@ export const useExpenseStore = defineStore('expenses', () => {
     }
   }
 
+  //-- Budget
+  const budgetsForMonth = computed(() => {
+    return budgets.value.filter((b) => b.month === filters.value.month)
+  })
+
+  function getBudgetForParticipant(participantId: string, month: string): Budget | undefined {
+    return budgets.value.find((b) => b.participant_id === participantId && b.month === month)
+  }
+
+  const monthsWithBudget = computed<string[]>(() => {
+    const months = new Set(budgets.value.map((b) => b.month))
+    return [...months].sort().reverse()
+  })
+
+  // watch(() => filteredExpenses, (val) => {
+  //   console.log('filteredExpenses', val)
+  // }, { immediate: true })
+
+  // Get Expenses for each Participant
+  const expensesByParticipant = computed<Record<string, number>>(() => {
+    const total = {} as Record<string, number>
+
+    filteredExpenses.value.forEach((expense) => {
+      expense.persons.forEach((personId) => {
+        if (!total[personId]) total[personId] = 0
+
+        let amount = getFilteredAmount(expense)
+        if (expense.currency === 'EUR') {
+          amount = amount / exchangeRate.value
+        }
+
+        total[personId] += amount
+      })
+    });
+
+    return total
+  })
+
+
   return {
     // States
     expenses,
     filters,
     participants,
+    budgets,
     exchangeRate,
     isParticipantsOpen,
     // Actions
@@ -264,6 +345,9 @@ export const useExpenseStore = defineStore('expenses', () => {
     updateParticipant,
     resetFilters,
     formatDate,
+    addBudget,
+    deleteBudget,
+    updateBudget,
     // Computed
     filteredExpenses,
     availableMonths,
@@ -271,5 +355,9 @@ export const useExpenseStore = defineStore('expenses', () => {
     expensesByMonth,
     categoryExpenses,
     getDisplayCurrency,
+    budgetsForMonth,
+    monthsWithBudget,
+    getBudgetForParticipant,
+    expensesByParticipant
   }
 })

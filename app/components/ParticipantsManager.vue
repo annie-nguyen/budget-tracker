@@ -18,7 +18,7 @@ function handleUpdate(): void {
   editingId.value = null
 }
 
-function hangleEdit(participant: Participant): void {
+function handleEdit(participant: Participant): void {
   editingId.value = participant.id
   editedName.value = participant.name
 }
@@ -45,7 +45,7 @@ function hangleEdit(participant: Participant): void {
       </form>
       <p v-else>{{ participant.name }}</p>
       <div v-if="!editingId" class="flex gap-3">
-        <button type="button" @click="hangleEdit(participant)" class="button-xs">✏️</button>
+        <button type="button" @click="handleEdit(participant)" class="button-xs">✏️</button>
         <button type="button" @click="store.removeParticipant(participant.id)" class="button-xs">Supprimer</button>
       </div>
     </div>
