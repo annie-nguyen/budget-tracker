@@ -2,6 +2,7 @@
 import { CATEGORY_META } from '~/utils/categories'
 
 const store = useExpenseStore()
+const isFullOpened = ref<boolean>(false)
 </script>
 
 <template>
@@ -24,7 +25,8 @@ const store = useExpenseStore()
 
     <div
       v-if="store.filteredExpenses.length > 0"
-      class="mt-5 pt-2 pb-5 border-y-1 border-slate-800"
+      :class="['mt-5 pt-2 pb-5 border-y-1 border-slate-800 accordion', { 'isOpened': isFullOpened }]"
+      @click="Object.keys(store.categoryExpenses).length > 4 && (isFullOpened = !isFullOpened)"
     >
       <div
         v-for="[category, total] in Object.entries(store.categoryExpenses)"

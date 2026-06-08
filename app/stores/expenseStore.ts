@@ -177,7 +177,7 @@ export const useExpenseStore = defineStore('expenses', () => {
 
   // Reset Filters
   function resetFilters(): void {
-    filters.value.month = ''
+    filters.value.month = filters.value.month
     filters.value.category = []
     filters.value.persons = []
     filters.value.currency = ''

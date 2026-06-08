@@ -1,0 +1,27 @@
+.accordion {
+  transition: max-height 0.5s ease;
+  max-height: 100px;
+  overflow: hidden;
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 50%;
+    background: #0f172b;
+    background: linear-gradient(0deg,rgba(15, 23, 43, 1) 0%, rgba(15, 23, 43, 0) 100%);
+    opacity: 1;
+    transition: opacity 0.5s ease;
+  }
+
+  &.isOpened {
+    max-height: 1000px;
+
+    &:after {
+      opacity: 0;
+    }
+  }
+}

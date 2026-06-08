@@ -3,9 +3,29 @@
 }
 
 .dropdown-content {
+  @apply overflow-hidden;
+}
+
+.dropdown-content__inner {
   @apply py-5;
 }
 
 .dropdown-button {
   @apply text-left cursor-pointer;
+}
+
+.dropdown-arrow {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-left: 2px solid white;
+  border-bottom: 2px solid white;
+  transform: rotate(-45deg);
+  margin-bottom: calc(var(--spacing) * 3);
+  margin-right: calc(var(--spacing) * 2);
+  transition: transform 0.3s ease;
+
+  &.isOpen {
+    transform: rotate(-225deg);
+  }
 }

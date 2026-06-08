@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { CURRENCIES, CATEGORIES } from '~/types'
+const { onEnter, onLeave } = useTransition()
 
 const store = useExpenseStore()
 const activeCatDropdown = ref<boolean>(false)
@@ -30,10 +31,9 @@ onUnmounted(() => {
 })
 
 const hasActiveFilters = computed(() => {
-  return Object.values(store.filters).some((value) => {
-    if (Array.isArray(value)) {
-      return value.length > 0
-    }
+  return Object.entries(store.filters).some(([key, value]) => {
+    if (key === 'month') return value !== store.availableMonths[0]
+    if (Array.isArray(value)) return value.length > 0
     return value !== ''
   })
 })
@@ -52,28 +52,32 @@ const hasActiveFilters = computed(() => {
         >
           Catégories
         </button>
-        <div v-if="activeCatDropdown" class="dropdown-content">
-          <div class="flex flex-wrap gap-x-3 gap-y-1">
-            <label
-              :for="`category-${category}`"
-              v-for="category in CATEGORIES"
-              :key="category"
-              class="checkbox"
-            >
-              <input
-                type="checkbox"
-                :id="`category-${category}`"
-                :value="category"
-                v-model="store.filters.category"
-              />
-              <span class="check"></span>
-              {{ category }}
-            </label>
+        <Transition @enter="onEnter" @leave="onLeave">
+          <div v-if="activeCatDropdown" class="dropdown-content">
+            <div class="dropdown-content__inner">
+              <div class="flex flex-wrap gap-x-3 gap-y-1">
+                <label
+                  :for="`category-${category}`"
+                  v-for="category in CATEGORIES"
+                  :key="category"
+                  class="checkbox"
+                >
+                  <input
+                    type="checkbox"
+                    :id="`category-${category}`"
+                    :value="category"
+                    v-model="store.filters.category"
+                  />
+                  <span class="check"></span>
+                  {{ category }}
+                </label>
+              </div>
+              <button v-if="store.filters.category.length > 0" type="button" class="mt-5 button-xs" @click="store.filters.category = []">
+                Réinitialiser
+              </button>
+            </div>
           </div>
-          <button v-if="store.filters.category.length > 0" type="button" class="mt-5 button-xs" @click="store.filters.category = []">
-            Réinitialiser
-          </button>
-        </div>
+        </Transition>
       </div>
     </div>
 
@@ -86,38 +90,41 @@ const hasActiveFilters = computed(() => {
         >
           Participants
         </button>
-        <div v-if="activePersonsDropdown" class="dropdown-content">
-          <div class="flex flex-wrap gap-x-3 gap-y-1">
-            <label
-              :for="`persons-${participant.id}`"
-              v-for="participant in store.participants"
-              :key="participant.id"
-              class="checkbox"
-            >
-              <input
-                type="checkbox"
-                :id="`persons-${participant.id}`"
-                :value="participant.id"
-                v-model="store.filters.persons"
-              />
-              <span class="check"></span>
-              {{ participant.name }}
-            </label>
+        <Transition @enter="onEnter" @leave="onLeave">
+          <div v-if="activePersonsDropdown" class="dropdown-content">
+            <div class="dropdown-content__inner">
+              <div class="flex flex-wrap gap-x-3 gap-y-1">
+                <label
+                  :for="`persons-${participant.id}`"
+                  v-for="participant in store.participants"
+                  :key="participant.id"
+                  class="checkbox"
+                >
+                  <input
+                    type="checkbox"
+                    :id="`persons-${participant.id}`"
+                    :value="participant.id"
+                    v-model="store.filters.persons"
+                  />
+                  <span class="check"></span>
+                  {{ participant.name }}
+                </label>
+              </div>
+              <button v-if="store.filters.persons.length > 0" type="button" class="mt-5 button-xs" @click="store.filters.persons = []">
+                Réinitialiser
+              </button>
+              <button v-if="store.participants.length === 0" type="button" class="mt-5 button-xs" @click="store.isParticipantsOpen = true">
+                + Ajouter des participants
+              </button>
+            </div>
           </div>
-          <button v-if="store.filters.persons.length > 0" type="button" class="mt-5 button-xs" @click="store.filters.persons = []">
-            Réinitialiser
-          </button>
-          <button v-if="store.participants.length === 0" type="button" class="mt-5 button-xs" @click="store.isParticipantsOpen = true">
-            + Ajouter des participants
-          </button>
-        </div>
+        </Transition>
       </div>
     </div>
 
     <div class="mt-5">
       <label for="select-month" class="label">Mois</label>
       <select v-model="store.filters.month" class="select" id="select-month">
-        <option value="">Tous</option>
         <option v-for="month in store.availableMonths" :key="month" :value="month">
           {{ store.formatDate(month) }}
         </option>
