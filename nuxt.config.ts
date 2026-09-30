@@ -1,7 +1,10 @@
 import tailwindcss from '@tailwindcss/vite'
 
 export default defineNuxtConfig({
-  modules: ['@pinia/nuxt', '@nuxtjs/supabase'],
+  modules: [
+    '@pinia/nuxt',
+    '@nuxtjs/supabase'
+  ],
   css: ['~/assets/main.css'],
   vite: {
     plugins: [tailwindcss()],

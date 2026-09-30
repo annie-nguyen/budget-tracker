@@ -169,10 +169,10 @@ export const useExpenseStore = defineStore('expenses', () => {
   // Get Amount by person
   function getFilteredAmount(expense: Expense): number {
     if (filters.value.persons.length > 0) {
-      return expense.amount / expense.persons.length
-    } else {
-      return expense.amount
+      const selectedCount = expense.persons.filter((p) => filters.value.persons.includes(p)).length
+      return (expense.amount / expense.persons.length) * selectedCount
     }
+    return expense.amount
   }
 
   // Reset Filters
@@ -310,17 +310,15 @@ export const useExpenseStore = defineStore('expenses', () => {
     const total = {} as Record<string, number>
 
     filteredExpenses.value.forEach((expense) => {
+      let amount = expense.amount / expense.persons.length
+      if (expense.currency === 'EUR') {
+        amount = amount / exchangeRate.value
+      }
+
       expense.persons.forEach((personId) => {
-        if (!total[personId]) total[personId] = 0
-
-        let amount = getFilteredAmount(expense)
-        if (expense.currency === 'EUR') {
-          amount = amount / exchangeRate.value
-        }
-
-        total[personId] += amount
+        total[personId] = (total[personId] ?? 0) + amount
       })
-    });
+    })
 
     return total
   })

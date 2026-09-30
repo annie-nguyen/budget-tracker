@@ -24,3 +24,5 @@ logs
 !.env.example
 
 BUDGET_APP_CONTEXT.md
+*storybook.log
+storybook-static
